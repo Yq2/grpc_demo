@@ -26,7 +26,10 @@ func main() {
 	}
 	s := grpc.NewServer()
 	pb.RegisterDataServer(s, &Data{})
-	s.Serve(lis)
+	serverErr := s.Serve(lis)
+	if err != nil {
+		log.Fatal(serverErr)
+	}
 	log.Println("grpc server in: %s", PORT_CLIENT)
 }
 
