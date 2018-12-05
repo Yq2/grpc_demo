@@ -41,3 +41,49 @@ https://studygolang.com/articles/12354?fr=sidebar
 http://www.mamicode.com/info-detail-2158143.html
 go get -u github.com/jteeuwen/go-bindata/...
 
+生成pb.go文件（在helloworld文件夹外面执行）
+protoc -I helloworld -I. \
+-I$GOPATH/src \
+-I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+--go_out=Mgoogle/api/annotations.proto=github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis/google/api,plugins=grpc:. \
+helloworld/helloworld.proto 
+
+
+生成swagger.json文件（在helloworld文件夹外面执行）
+protoc -I helloworld -I. \
+-I$GOPATH/src  -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+--swagger_out=logtostderr=true:. \
+helloworld/helloworld.proto
+
+2 pb.gw.go文件（在helloworld文件夹外面执行）
+protoc -I helloworld -I. \
+-I$GOPATH/src  -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+--grpc-gateway_out=logtostderr=true:. \
+helloworld/helloworld.proto
+
+
+//仅仅参考，验证不成功
+# 编译 google.api
+protoc -I . --go_out=plugins=grpc,Mgoogle/protobuf/descriptor.proto=github.com/golang/protobuf/protoc-gen-go/descriptor:. google/api/*.proto
+
+#编译hello_http.proto为hello_http.pb.proto
+protoc -I . --go_out=plugins=grpc,Mgoogle/api/annotations.proto=grpc-hello-world/proto/google/api:. ./hello.proto
+
+#编译hello_http.proto为hello_http.pb.gw.proto
+protoc --grpc-gateway_out=logtostderr=true:. ./hello.proto
+
+
+
+
+curl -X POST -k http://localhost:8080/v1/example/echo -d '{"name": " world"}'
+ 
+{"message":"Hello  world"}
+
+//生成datafile.go文件（在swagger-ui目录下执行）
+go-bindata --nocompress -pkg ../swagger -o ../swagger/datafile.go ./...
+
+//安装go-bindata-assetfs,它能够使用go-bindata所生成Swagger UI的Go代码，结合net/http对外提供服务
+go get github.com/elazarl/go-bindata-assetfs/...
+
+
+https://github.com/EDDYCJY/grpc-hello-world.git
